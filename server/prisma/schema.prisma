@@ -13,3 +13,29 @@ model User {
   password         String
   sendNotification Boolean
 }
+
+model PlacementDrive {
+  id                   String   @id @default(uuid())
+
+  externalId           String   @unique
+
+  companyName          String
+  jobLocation          String?
+  jobDescriptionUrl    String?
+  companyApplyUrl      String?
+
+  minCgpa              Float?
+  maxBacklog           Int?
+
+  startDate            DateTime?
+  registrationDeadline DateTime?
+  isOpenForApply       Boolean  @default(false)
+
+  sourceCreatedAt      DateTime?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+}
+
+
