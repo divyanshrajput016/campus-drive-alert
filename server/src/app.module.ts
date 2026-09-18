@@ -10,8 +10,8 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { PlacementDrivesModule } from './placement-drives/placement-drives.module.js';
 
 @Module({
-  imports: [ AuthModule, NotificationsModule, SyncModule, PrismaModule, PlacementDrivesModule],
+  imports: [PrismaModule, AuthModule, NotificationsModule, SyncModule, PrismaModule, PlacementDrivesModule],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
-export class AppModule {}
+export class AppModule { }

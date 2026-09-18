@@ -11,10 +11,15 @@ import {
   Bell, 
   User as UserIcon, 
   LogIn, 
+  UserPlus,
   RefreshCw, 
   CheckCircle2, 
   AlertCircle,
-  Briefcase
+  Briefcase,
+  Lock,
+  ShieldAlert,
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { PlacementDrive, fetchPlacementDrives } from '@/lib/api';
@@ -106,12 +111,12 @@ const HeroSubtitle = styled.p`
   line-height: 24px;
   color: var(--text-secondary);
   max-width: 680px;
-  margin-bottom: 28px;
+  margin-bottom: 10px;
 `;
 
 const UserProfileCard = styled.div`
-  background: var(--surface-bg, rgba(23, 23, 23, 0.75));
-  border: 1px solid var(--surface-border, rgba(255, 255, 255, 0.1));
+  background: var(--surface-bg, rgba(255, 255, 255, 0.85));
+  border: 1px solid var(--surface-border, #E2E8F0);
   border-radius: var(--bm-radius-card, 12px);
   padding: 24px 28px;
   margin-bottom: 36px;
@@ -165,30 +170,101 @@ const UserProfileCard = styled.div`
       }
     }
   }
+`;
 
-  .guest-banner {
+const AuthRequiredCard = styled.div`
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--bm-radius-modal, 16px);
+  padding: 54px 36px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--bm-shadow-sm);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  .lock-icon-wrapper {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: rgba(29, 65, 227, 0.1);
+    border: 1.5px solid rgba(82, 117, 242, 0.3);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    color: var(--bm-primary-500);
+    margin-bottom: 22px;
+    box-shadow: 0px 6px 20px rgba(29, 65, 227, 0.15);
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin-bottom: 30px;
+  }
+
+  .btn-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     flex-wrap: wrap;
-    gap: 16px;
+    justify-content: center;
+  }
+`;
 
-    .guest-text {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 960px;
+  margin-top: 40px;
+`;
 
-      h3 {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-primary);
-      }
+const FeatureCard = styled.div`
+  background: var(--stage-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--bm-radius-card, 12px);
+  padding: 20px 18px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-      p {
-        font-size: 13px;
-        color: var(--text-secondary);
-      }
-    }
+  .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(29, 65, 227, 0.1);
+    color: var(--bm-primary-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  p {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 0;
   }
 `;
 
@@ -266,10 +342,10 @@ const EmptyState = styled.div`
 `;
 
 export default function HomePage() {
-  const { user, updateNotificationSetting } = useAuth();
+  const { user, loading: authLoading, updateNotificationSetting } = useAuth();
 
   const [drives, setDrives] = useState<PlacementDrive[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'open' | 'closed' | 'cgpa'>('all');
@@ -287,6 +363,7 @@ export default function HomePage() {
   });
 
   const loadDrives = async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
@@ -301,8 +378,12 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    loadDrives();
-  }, []);
+    if (user) {
+      loadDrives();
+    } else {
+      setDrives([]);
+    }
+  }, [user]);
 
   const handleToggleNotification = async (enabled: boolean) => {
     try {
@@ -355,14 +436,77 @@ export default function HomePage() {
             Track Verified Campus Drives<span className="accent">seamlessly</span>
           </HeroTitle>
           <HeroSubtitle>
-            All placement drives below are served directly from the persistent database. Stay ahead with real-time tracking, eligibility criteria, and instant email dispatch.
+            All placement drives are stored and served directly from the persistent database with real-time tracking, eligibility criteria, and instant email dispatch.
           </HeroSubtitle>
         </HeroSection>
 
-        {/* User Details & Slider Toggle Card */}
-        <UserProfileCard>
-          {user ? (
-            <>
+        {authLoading ? (
+          <LoadingState>
+            <RefreshCw size={32} className="animate-spin" color="var(--bm-primary-500)" />
+            <p>Checking authentication status...</p>
+          </LoadingState>
+        ) : !user ? (
+          /* Locked State for Non-Logged-In Users */
+          <AuthRequiredCard>
+            <div className="lock-icon-wrapper">
+              <Lock size={32} />
+            </div>
+            <h2>Student Sign In Required</h2>
+            <p>
+              Campus placement drives, eligibility criteria, and application links are reserved for authenticated students. Please sign in or create an account to view all active drives.
+            </p>
+            <div className="btn-group">
+              <Link href="/login">
+                <AnimatedButton variant="primary" size="lg" icon={<LogIn size={18} />}>
+                  Sign In to View Drives
+                </AnimatedButton>
+              </Link>
+              <Link href="/signup">
+                <AnimatedButton variant="outline" size="lg" icon={<UserPlus size={18} />}>
+                  Create Free Account
+                </AnimatedButton>
+              </Link>
+            </div>
+
+            <FeatureGrid>
+              <FeatureCard>
+                <div className="icon">
+                  <Database size={18} />
+                </div>
+                <h4>Database Feed</h4>
+                <p>Access direct records of all verified campus drives saved in the database.</p>
+              </FeatureCard>
+
+              <FeatureCard>
+                <div className="icon">
+                  <Bell size={18} />
+                </div>
+                <h4>Real-Time Alerts</h4>
+                <p>Toggle our tactile slider to receive direct email alerts as new drives are added.</p>
+              </FeatureCard>
+
+              <FeatureCard>
+                <div className="icon">
+                  <GraduationCap size={18} />
+                </div>
+                <h4>Eligibility Checker</h4>
+                <p>View minimum CGPA and maximum backlog cutoffs for every opportunity.</p>
+              </FeatureCard>
+
+              <FeatureCard>
+                <div className="icon">
+                  <FileText size={18} />
+                </div>
+                <h4>Direct Apply Links</h4>
+                <p>Get instant access to registration forms and official JD documents.</p>
+              </FeatureCard>
+            </FeatureGrid>
+          </AuthRequiredCard>
+        ) : (
+          /* Logged In Experience */
+          <>
+            {/* User Details & Slider Toggle Card */}
+            <UserProfileCard>
               <div className="user-header-row">
                 <div className="user-badge-group">
                   <div className="avatar">
@@ -386,132 +530,111 @@ export default function HomePage() {
                 enabled={user.sendNotification}
                 onToggle={handleToggleNotification}
               />
-            </>
-          ) : (
-            <div className="guest-banner">
-              <div className="guest-text">
-                <h3>Want instant email alerts when new campus drives drop?</h3>
-                <p>
-                  Sign in or create an account to turn on real-time email notifications with our instant slider toggle.
-                </p>
-              </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <Link href="/login">
-                  <AnimatedButton variant="primary" size="sm" icon={<LogIn size={15} />}>
-                    Sign In to Enable Alerts
-                  </AnimatedButton>
-                </Link>
-                <Link href="/signup">
-                  <AnimatedButton variant="outline" size="sm">
-                    Register
-                  </AnimatedButton>
-                </Link>
-              </div>
-            </div>
-          )}
-        </UserProfileCard>
+            </UserProfileCard>
 
-        {/* Stats Metrics Cards */}
-        <StatsOverview
-          drives={drives}
-          userAlertsEnabled={user?.sendNotification ?? false}
-        />
+            {/* Stats Metrics Cards */}
+            <StatsOverview
+              drives={drives}
+              userAlertsEnabled={user?.sendNotification ?? false}
+            />
 
-        {/* Search and Filters */}
-        <ControlsBar>
-          <NeumorphicInput
-            icon={<Search size={16} />}
-            placeholders={[
-              'Search by company name...',
-              'Search by location (e.g. Indore)...',
-              'Find eligible drives...',
-            ]}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            style={{ width: '320px' }}
-          />
-
-          <FilterChips>
-            <Chip
-              $active={filterMode === 'all'}
-              onClick={() => setFilterMode('all')}
-            >
-              All Drives ({drives.length})
-            </Chip>
-            <Chip
-              $active={filterMode === 'open'}
-              onClick={() => setFilterMode('open')}
-            >
-              Open for Apply ({drives.filter(d => d.isOpenForApply).length})
-            </Chip>
-            <Chip
-              $active={filterMode === 'closed'}
-              onClick={() => setFilterMode('closed')}
-            >
-              Closed ({drives.filter(d => !d.isOpenForApply).length})
-            </Chip>
-            <Chip
-              $active={filterMode === 'cgpa'}
-              onClick={() => setFilterMode('cgpa')}
-            >
-              With CGPA Cutoff
-            </Chip>
-            <AnimatedButton
-              variant="outline"
-              size="sm"
-              icon={<RefreshCw size={14} />}
-              onClick={loadDrives}
-              loading={loading}
-              title="Refresh from PostgreSQL Database"
-            >
-              Refresh
-            </AnimatedButton>
-          </FilterChips>
-        </ControlsBar>
-
-        {/* Campus Drives Grid from Database */}
-        {loading ? (
-          <LoadingState>
-            <RefreshCw size={36} className="animate-spin" color="var(--bm-primary-500)" />
-            <p>Querying campus drives from PostgreSQL database...</p>
-          </LoadingState>
-        ) : error ? (
-          <EmptyState>
-            <AlertCircle size={40} color="#EF4444" />
-            <h3>Unable to Load Campus Drives</h3>
-            <p>{error}</p>
-            <AnimatedButton variant="primary" size="md" onClick={loadDrives}>
-              Retry Database Query
-            </AnimatedButton>
-          </EmptyState>
-        ) : filteredDrives.length === 0 ? (
-          <EmptyState>
-            <Briefcase size={40} color="var(--bm-primary-400)" />
-            <h3>No Placement Drives Found</h3>
-            <p>
-              No campus drives match your current search or filter. Try clearing your filters or refreshing the database.
-            </p>
-            <AnimatedButton
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchQuery('');
-                setFilterMode('all');
-              }}
-            >
-              Clear Filters
-            </AnimatedButton>
-          </EmptyState>
-        ) : (
-          <DrivesGrid>
-            {filteredDrives.map(drive => (
-              <CampusDriveCard
-                key={drive.id}
-                drive={drive}
-                onViewDetails={setSelectedDrive}
+            {/* Search and Filters */}
+            <ControlsBar>
+              <NeumorphicInput
+                icon={<Search size={16} />}
+                placeholders={[
+                  'Search by company name...',
+                  'Search by location (e.g. Indore)...',
+                  'Find eligible drives...',
+                ]}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ width: '320px' }}
               />
-            ))}
-          </DrivesGrid>
+
+              <FilterChips>
+                <Chip
+                  $active={filterMode === 'all'}
+                  onClick={() => setFilterMode('all')}
+                >
+                  All Drives ({drives.length})
+                </Chip>
+                <Chip
+                  $active={filterMode === 'open'}
+                  onClick={() => setFilterMode('open')}
+                >
+                  Open for Apply ({drives.filter(d => d.isOpenForApply).length})
+                </Chip>
+                <Chip
+                  $active={filterMode === 'closed'}
+                  onClick={() => setFilterMode('closed')}
+                >
+                  Closed ({drives.filter(d => !d.isOpenForApply).length})
+                </Chip>
+                <Chip
+                  $active={filterMode === 'cgpa'}
+                  onClick={() => setFilterMode('cgpa')}
+                >
+                  With CGPA Cutoff
+                </Chip>
+                <AnimatedButton
+                  variant="outline"
+                  size="sm"
+                  icon={<RefreshCw size={14} />}
+                  onClick={loadDrives}
+                  loading={loading}
+                  title="Refresh from PostgreSQL Database"
+                >
+                  Refresh
+                </AnimatedButton>
+              </FilterChips>
+            </ControlsBar>
+
+            {/* Campus Drives Grid from Database */}
+            {loading ? (
+              <LoadingState>
+                <RefreshCw size={36} className="animate-spin" color="var(--bm-primary-500)" />
+                <p>Querying campus drives from PostgreSQL database...</p>
+              </LoadingState>
+            ) : error ? (
+              <EmptyState>
+                <AlertCircle size={40} color="#EF4444" />
+                <h3>Unable to Load Campus Drives</h3>
+                <p>{error}</p>
+                <AnimatedButton variant="primary" size="md" onClick={loadDrives}>
+                  Retry Database Query
+                </AnimatedButton>
+              </EmptyState>
+            ) : filteredDrives.length === 0 ? (
+              <EmptyState>
+                <Briefcase size={40} color="var(--bm-primary-400)" />
+                <h3>No Placement Drives Found</h3>
+                <p>
+                  No campus drives match your current search or filter. Try clearing your filters or refreshing the database.
+                </p>
+                <AnimatedButton
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilterMode('all');
+                  }}
+                >
+                  Clear Filters
+                </AnimatedButton>
+              </EmptyState>
+            ) : (
+              <DrivesGrid>
+                {filteredDrives.map(drive => (
+                  <CampusDriveCard
+                    key={drive.id}
+                    drive={drive}
+                    onViewDetails={setSelectedDrive}
+                  />
+                ))}
+              </DrivesGrid>
+            )}
+          </>
         )}
       </ContentInner>
 
