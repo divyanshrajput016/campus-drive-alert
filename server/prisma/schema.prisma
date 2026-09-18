@@ -12,10 +12,11 @@ model User {
   email            String   @unique
   password         String
   sendNotification Boolean
+  role             String
 }
 
 model PlacementDrive {
-  id                   String   @id @default(uuid())
+  id                   Int   @id @default(autoincrement())
 
   externalId           String   @unique
 
@@ -27,14 +28,14 @@ model PlacementDrive {
   minCgpa              Float?
   maxBacklog           Int?
 
-  startDate            DateTime?
+  startDate            Date?
   registrationDeadline DateTime?
   isOpenForApply       Boolean  @default(false)
 
   sourceCreatedAt      DateTime?
 
   createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  updatedAt            DateTime @default(now())
 
 }
 

@@ -1,40 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationsService } from '../notifications/notifications.service.js';
-import { PlacementDrivesService } from '../placement-drives/placement-drives.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { PlacementDrivesService } from '../placement-drives/placement-drives.service.js';
+
+type Data = {
+    externalId : string,
+    companyName : string,
+    jobLocation : string,
+    companyApplyUrl : string,
+
+    minCgpa : number,
+    maxBacklog : number,
+
+    startDate : Date,
+    registrationDeadline : Date,
+    isOpenForApply : boolean,
+
+    sourceCreatedAt : Date,
+}
 
 @Injectable()
-export class SyncService {
+export class InsertMails {
     constructor(
-        private readonly notificationsService:NotificationsService,
-        private readonly placementDrives:PlacementDrivesService,
-        private readonly Prisma:PrismaService
-    ) {}
-    
-    async checkDrives() {
+        private readonly prisma: PrismaService,
+        private readonly placementDrives:PlacementDrivesService
+        ) {}
+
+    async insertToDB() {
+
         const placementDrives : any = await this.placementDrives.getPlacementDrives();
         const placementDrivesArray = placementDrives.content;
 
         for(const placementdrive of placementDrivesArray) {
-            const isExist = await this.Prisma.placementDrive.findFirst({
-                where: {
-                    externalId:placementdrive.driveId
-                }
-            });
-
-            if(!isExist) {
-                const users = await this.Prisma.user.findMany({
-                    where: {
-                        sendNotification: true
-                    }
-                })
 
 
-                for(const user of users) {
-                    await this.notificationsService.sendEmail(`${user.email}`, placementdrive);
-                }
-
-                await this.Prisma.placementDrive.upsert({
+                await this.prisma.placementDrive.upsert({
                     where: {
                         externalId: placementdrive.driveId,
                     },
@@ -55,12 +54,13 @@ export class SyncService {
 
                     update: {}, // don't change anything if it already exists
                 });
-            }
         }
-
 
         return {
-            message: "Email send successfully"
-        }
+        message: 'Placement drives inserted successfully',
+        count: placementDrivesArray.length,
+    };
+
+        
     }
 }
