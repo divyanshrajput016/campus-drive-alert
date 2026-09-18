@@ -24,6 +24,7 @@ export class NotificationsService {
   }
 
     async sendEmail(email: string, companyData: PlacementDriveEmailData) {
+
     const companyName = companyData.companyName ?? companyData.driveName ?? 'New company';
     const escapeHtml = (value: string) => value
       .replaceAll('&', '&amp;')
@@ -47,7 +48,7 @@ export class NotificationsService {
       : '';
 
     const { data, error } = await this.resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: `${process.env.SENDER_EMAIL}`,
       to: `${email}`,
       subject: `New Placement Drive: ${companyName}`,
       html: `

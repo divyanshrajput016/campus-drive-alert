@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, Param } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 
 @Controller('auth')
@@ -16,4 +16,18 @@ export class AuthController {
         const { email, password } = body;
         return this.authService.login(email , password);
     }
+
+    @Get("user/:id")
+    getUser(@Param('id') id: string) {
+        return this.authService.getUserById(Number(id));
+    }
+
+    @Patch("user/:id/notification")
+    updateNotification(
+        @Param('id') id: string,
+        @Body() body: { sendNotification: boolean }
+    ) {
+        return this.authService.updateNotification(Number(id), body.sendNotification);
+    }
 }
+

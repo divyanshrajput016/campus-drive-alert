@@ -71,4 +71,43 @@ export class AuthService {
       },
     };
   }
+
+  async getUserById(id: number) {
+    const user = await this.Prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        sendNotification: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    return user;
+  }
+
+  async updateNotification(id: number, sendNotification: boolean) {
+    const user = await this.Prisma.user.update({
+      where: { id },
+      data: {
+        sendNotification,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        sendNotification: true,
+      },
+    });
+
+    return {
+      message: `Notifications ${sendNotification ? 'enabled' : 'disabled'} successfully`,
+      user,
+    };
+  }
 }
+

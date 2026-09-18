@@ -1,0 +1,140 @@
+:root, [data-theme="light"] {
+  /* BookMAG Color Tokens from design.md */
+  --bm-primary-50: #EEF2FF;
+  --bm-primary-100: #DDE5FF;
+  --bm-primary-200: #BBCBFF;
+  --bm-primary-300: #8FA8FF;
+  --bm-primary-400: #5275F2;
+  --bm-primary-500: #1D41E3;
+  --bm-primary-600: #1939C9;
+  --bm-primary-700: #1631AD;
+  --bm-primary-800: #11288D;
+  --bm-primary-900: #0C1E69;
+
+  --bm-neutral-50: #FAFAFA;
+  --bm-neutral-100: #F5F5F5;
+  --bm-neutral-200: #E5E5E5;
+  --bm-neutral-300: #D4D4D4;
+  --bm-neutral-400: #A3A3A3;
+  --bm-neutral-500: #737373;
+  --bm-neutral-600: #525252;
+  --bm-neutral-700: #404040;
+  --bm-neutral-800: #262626;
+  --bm-neutral-900: #171717;
+
+  --bm-success-500: #22C55E;
+  --bm-warning-500: #F59E0B;
+  --bm-error-500: #EF4444;
+
+  --bm-radius-tag: 6px;
+  --bm-radius-button: 8px;
+  --bm-radius-card: 12px;
+  --bm-radius-modal: 16px;
+
+  --bm-shadow-sm: 0px 2px 8px rgba(0, 0, 0, 0.04);
+  --bm-shadow-md: 0px 6px 18px rgba(0, 0, 0, 0.06);
+  --bm-shadow-lg: 0px 14px 36px rgba(0, 0, 0, 0.09);
+
+  --bm-font-primary: var(--font-funnel), var(--font-jakarta), system-ui, -apple-system, sans-serif;
+  --bm-font-accent: 'Playwrite US Trad', cursive;
+
+  /* Light Theme Variables (Default) */
+  --background: #F8FAFC;
+  --surface-bg: rgba(255, 255, 255, 0.88);
+  --surface-solid: #FFFFFF;
+  --surface-border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --hero-bg: linear-gradient(135deg, #EEF2FF 0%, #DDE5FF 100%);
+  --stage-bg: #F1F5F9;
+  --spec-bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+
+  /* Button Specific - LIGHT MODE */
+  --btn-bg: #FFFFFF;
+  --btn-text: #0F172A;
+  --btn-border: #1D41E3;
+  --btn-hover-bg: #1D41E3;
+  --btn-hover-text: #FFFFFF;
+  --btn-hover-border: #1939C9;
+
+  /* Neumorphic Inset Light */
+  --neu-input-bg: #F1F5F9;
+  --neu-inset-shadow: inset 4px 4px 8px #cbd5e1, inset -4px -4px 8px #ffffff;
+  --neu-inset-focus: inset 3px 3px 6px #94a3b8, inset -3px -3px 6px #ffffff;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Variables */
+  --background: #0B0E14;
+  --surface-bg: rgba(23, 23, 23, 0.75);
+  --surface-solid: #171717;
+  --surface-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: #A3A3A3;
+  --text-muted: #737373;
+  --hero-bg: linear-gradient(135deg, rgba(23, 23, 23, 0.95) 0%, rgba(12, 30, 105, 0.35) 100%);
+  --stage-bg: #11141D;
+  --spec-bg: #11141D;
+  --card-bg: rgba(20, 24, 33, 0.7);
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  /* Button Specific - DARK MODE */
+  --btn-bg: #171717;
+  --btn-text: #FFFFFF;
+  --btn-border: #1D41E3;
+  --btn-hover-bg: #1D41E3;
+  --btn-hover-text: #FFFFFF;
+  --btn-hover-border: #5275F2;
+
+  /* Neumorphic Inset Dark */
+  --neu-input-bg: #12151E;
+  --neu-inset-shadow: inset 5px 5px 9px #090b10, inset -5px -5px 9px #1b202c;
+  --neu-inset-focus: inset 5px 5px 8px #06080d, inset -5px -5px 8px #191f2b;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--bm-font-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bm-primary-200);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bm-primary-400);
+}

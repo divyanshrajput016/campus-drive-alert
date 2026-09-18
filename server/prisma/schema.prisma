@@ -12,7 +12,6 @@ model User {
   email            String   @unique
   password         String
   sendNotification Boolean
-  role             String
 }
 
 model PlacementDrive {
@@ -28,7 +27,7 @@ model PlacementDrive {
   minCgpa              Float?
   maxBacklog           Int?
 
-  startDate            Date?
+  startDate            DateTime?
   registrationDeadline DateTime?
   isOpenForApply       Boolean  @default(false)
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 interface LoginResponse {
   accessToken: string;
@@ -7,6 +8,13 @@ interface LoginResponse {
 
 @Injectable()
 export class PlacementDrivesService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getDrivesFromDB() {
+    return this.prisma.placementDrive.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
   async getPlacementDrives() {
     try {
       const loginURL = process.env.LOGIN_URL;
